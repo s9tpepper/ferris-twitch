@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
 use commands::start_chat;
 
-use crate::chat_commands::{add_command, list_commands, remove_command};
+use crate::chat_commands::{add_action, add_command, list_actions, list_commands, remove_action, remove_command};
 
 mod commands;
 
@@ -30,18 +30,12 @@ pub fn command() -> anyhow::Result<()> {
             SubCmds::Remove { name } => remove_command(&name),
         },
 
-        // Cmds::IrcActions { cmd } => match cmd {
-        //     IrcActionSubCmds::List => {
-        //         list_actions();
-        //     }
-        //     IrcActionSubCmds::Add { name, cli } => {
-        //         let _ = add_action(&name, &cli);
-        //     }
-        //     IrcActionSubCmds::Remove { name } => {
-        //         let _ = remove_action(&name);
-        //     }
-        // },
-        //
+        Cmds::IrcActions { cmd } => match cmd {
+            IrcActionSubCmds::List => list_actions(),
+            IrcActionSubCmds::Add { name, cli } => add_action(&name, &cli),
+            IrcActionSubCmds::Remove { name } => remove_action(&name),
+        },
+
         // Cmds::Rewards { cmd } => match cmd {
         //     RewardSubCmds::List => {
         //         list_rewards();

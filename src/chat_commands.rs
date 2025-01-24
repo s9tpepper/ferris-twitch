@@ -116,3 +116,55 @@ pub fn remove_command(command_name: &str) -> anyhow::Result<()> {
 
     Ok(())
 }
+
+pub fn list_actions() -> anyhow::Result<()> {
+    list("irc_actions")
+}
+
+fn list(list_type: &str) -> anyhow::Result<()> {
+    let list = get_list(&list_type)?;
+    let human_readable = list_type.replace('_', " ");
+    if list.is_empty() {
+        println!("Currently no {human_readable} have been added.");
+    }
+
+    println!("Available {human_readable}:");
+    list.iter().for_each(|item| println!("- {}", item));
+
+    Ok(())
+}
+
+pub fn add_action(action_name: &str, cli: &str) -> anyhow::Result<()> {
+    add_item(action_name, cli, "irc_actions")
+}
+
+pub fn add_item(item_name: &str, cli: &str, item_type: &str) -> anyhow::Result<()> {
+    let file_contents = cli.to_string();
+
+    let mut item_path = get_data_directory(Some(item_type))?;
+
+    if !item_path.exists() {
+        std::fs::create_dir_all(&item_path)?;
+    }
+
+    item_path.push(item_name);
+
+    fs::write(item_path, file_contents)?;
+
+    Ok(())
+}
+
+pub fn remove_action(action_name: &str) -> anyhow::Result<()> {
+    remove_item(action_name, "irc_actions")
+}
+
+pub fn remove_item(item_name: &str, item_type: &str) -> anyhow::Result<()> {
+    let mut item_path = get_data_directory(Some(item_type))?;
+    item_path.push(item_name);
+
+    if item_path.exists() {
+        return Ok(fs::remove_file(item_path)?);
+    }
+
+    Ok(())
+}
