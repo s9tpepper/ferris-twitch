@@ -168,3 +168,15 @@ pub fn remove_item(item_name: &str, item_type: &str) -> anyhow::Result<()> {
 
     Ok(())
 }
+
+pub fn list_rewards() -> anyhow::Result<()> {
+    list("chat_rewards")
+}
+
+pub fn add_reward(reward_name: &str, cli: &str) -> anyhow::Result<()> {
+    add_item(reward_name, cli, "chat_rewards")
+}
+
+pub fn remove_reward(reward_name: &str) -> anyhow::Result<()> {
+    remove_item(reward_name, "chat_rewards")
+}
