@@ -19,6 +19,7 @@ members = [
 
 [dependencies]
 anathema = { git = "https://github.com/s9tpepper/anathema.git", branch = "dev"  }
+anyhow = "1.0.95"
 base64 = "0.22.1"
 clap = { version = "4.5.20", features = ["derive", "env", "cargo"] }
 color-eyre = "0.6.3"

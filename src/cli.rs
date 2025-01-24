@@ -1,0 +1,185 @@
+use clap::{Parser, Subcommand};
+use commands::start_chat;
+
+use crate::chat_commands::{add_command, list_commands, remove_command};
+
+mod commands;
+
+pub fn command() -> anyhow::Result<()> {
+    let cli = Cli::parse();
+    match cli.commands {
+        // TODO: This needs to be moved in from v1
+        // Cmds::Admin => start_admin(),
+        Cmds::Chat {
+            twitch_name,
+            oauth_token,
+            client_id,
+            skip_announcements,
+        } => start_chat(
+            twitch_name.as_deref(),
+            oauth_token.as_deref(),
+            client_id.as_deref(),
+            skip_announcements,
+        ),
+
+        Cmds::Commands { cmd } => match cmd {
+            SubCmds::List => list_commands(),
+
+            SubCmds::Add { name, message, timing } => add_command(&name, &message, timing),
+
+            SubCmds::Remove { name } => remove_command(&name),
+        },
+
+        // Cmds::IrcActions { cmd } => match cmd {
+        //     IrcActionSubCmds::List => {
+        //         list_actions();
+        //     }
+        //     IrcActionSubCmds::Add { name, cli } => {
+        //         let _ = add_action(&name, &cli);
+        //     }
+        //     IrcActionSubCmds::Remove { name } => {
+        //         let _ = remove_action(&name);
+        //     }
+        // },
+        //
+        // Cmds::Rewards { cmd } => match cmd {
+        //     RewardSubCmds::List => {
+        //         list_rewards();
+        //     }
+        //     RewardSubCmds::Add { name, cli } => {
+        //         let _ = add_reward(&name, &cli);
+        //     }
+        //     RewardSubCmds::Remove { name } => {
+        //         let _ = remove_reward(&name);
+        //     }
+        // },
+        //
+        // // Cmds::SendMessage { message } => {
+        // //     send_message(&message);
+        // // }
+        // Cmds::Login => {
+        //     start_login_flow();
+        // }
+
+        // NOTE: Remove this catchall when done with the previous commands
+        _ => anyhow::Ok(()),
+    }
+}
+
+#[derive(Parser)]
+pub struct Cli {
+    #[command(subcommand)]
+    commands: Cmds,
+}
+
+#[derive(Subcommand)]
+enum Cmds {
+    /// Open the admin dashboard
+    Admin,
+
+    /// Start Twitch Chat client
+    Chat {
+        /// Your Twitch username
+        #[arg(long, short = 'n', env = "TWITCH_NAME")]
+        twitch_name: Option<String>,
+
+        /// Your Twitch OAuth Token
+        #[arg(long, short = 't', env = "OAUTH_TOKEN")]
+        oauth_token: Option<String>,
+
+        /// Your Twitch app client ID
+        #[arg(long, short, env = "CLIENT_ID")]
+        client_id: Option<String>,
+
+        /// Set to turn off announcements
+        #[arg(long, short = 's', env = "SKIP_ANNOUNCEMENTS", default_value_t = false)]
+        skip_announcements: bool,
+    },
+
+    /// Manage chat commands
+    Commands {
+        #[command(subcommand)]
+        cmd: SubCmds,
+    },
+
+    /// Manage chat rewards
+    Rewards {
+        #[command(subcommand)]
+        cmd: RewardSubCmds,
+    },
+
+    /// Manage IRC actions
+    IrcActions {
+        #[command(subcommand)]
+        cmd: IrcActionSubCmds,
+    },
+
+    /// Login to Twitch and get a token
+    Login,
+}
+
+#[derive(Subcommand)]
+enum SubCmds {
+    /// List commands
+    List,
+
+    /// Add a chat command
+    Add {
+        /// The name of the command
+        name: String,
+
+        /// The message to send for the command
+        message: String,
+
+        /// The timing for the message in minutes
+        timing: Option<usize>,
+    },
+
+    /// Remove a command
+    Remove {
+        /// The name of the command to remove
+        name: String,
+    },
+}
+
+#[derive(Subcommand)]
+enum RewardSubCmds {
+    /// List rewards
+    List,
+
+    /// Add a reward command
+    Add {
+        /// The name of the reward as it is named on Twitch
+        name: String,
+
+        /// The cli command to execute for the reward
+        cli: String,
+    },
+
+    /// Remove a command
+    Remove {
+        /// The name of the reward to remove
+        name: String,
+    },
+}
+
+#[derive(Subcommand)]
+enum IrcActionSubCmds {
+    /// List IRC Actions
+    List,
+
+    /// Add an IRC ation command
+    Add {
+        /// The name of the IRC message type as it is named in the IRC protocol
+        name: String,
+
+        /// The cli command to execute for as the IRC action
+        cli: String,
+    },
+
+    /// Remove an IRC action
+    Remove {
+        /// The name of the IRC message type to remove
+        name: String,
+    },
+}
