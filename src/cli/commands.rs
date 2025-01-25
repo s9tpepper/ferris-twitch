@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crate::twitch::{
     assets::get_badges,
-    auth::{get_credentials, refresh_token, validate, TokenStatus},
+    auth::{get_credentials, refresh_token, validate},
 };
 
 pub fn start_chat(
@@ -13,16 +13,13 @@ pub fn start_chat(
 ) -> anyhow::Result<()> {
     let (_name, token, id, refresh) = get_credentials(twitch_name, oauth_token, client_id)?;
 
-    let validate_token_response = validate(&token);
-    let mut token_status: Option<TokenStatus> = None;
-    if validate_token_response.is_err() {
-        let token_status_result = refresh_token(&refresh);
-        if token_status_result.is_err() {
-            panic!("Token refresh failed, unable to validate Twitch API access. Please login again.");
-        }
-
-        token_status = Some(token_status_result.unwrap());
-    }
+    let token_status = match validate(&token) {
+        Ok(_) => None,
+        Err(_) => match refresh_token(&refresh) {
+            Ok(token_status) => Some(token_status),
+            Err(_) => panic!("Token refresh failed, unable to validate Twitch API access. Please login again."),
+        },
+    };
 
     let (oauth_token, client_id) = match token_status {
         Some(token_status) => (
