@@ -1,5 +1,10 @@
+use std::fs::File;
+
 use clap::{Parser, Subcommand};
 use commands::start_chat;
+
+use log::{info, LevelFilter};
+use simplelog::{Config, WriteLogger};
 
 use crate::{
     chat_commands::{
@@ -11,7 +16,21 @@ use crate::{
 
 mod commands;
 
+fn logger() {
+    // TODO: Move this log file into the application directory
+    // TODO: Enable this block with an env var
+    let _ = WriteLogger::init(
+        LevelFilter::Info,
+        Config::default(),
+        File::create("sergeant.log").unwrap(),
+    );
+
+    info!("Logging has been enabled");
+}
+
 pub fn command() -> anyhow::Result<()> {
+    logger();
+
     let cli = Cli::parse();
     match cli.commands {
         // TODO: This needs to be moved in from v1

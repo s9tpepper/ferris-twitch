@@ -1,8 +1,18 @@
-use std::sync::Arc;
+use std::{
+    sync::{mpsc::channel, Arc},
+    thread::{self, sleep},
+    time::Duration,
+};
 
-use crate::twitch::{
-    assets::get_badges,
-    auth::{get_credentials, refresh_token, validate},
+use log::info;
+
+use crate::{
+    channel::ChannelMessages,
+    twitch::{
+        assets::get_badges,
+        auth::{get_credentials, refresh_token, validate},
+        eventsub::start_eventsub,
+    },
 };
 
 pub fn start_chat(
@@ -11,6 +21,8 @@ pub fn start_chat(
     client_id: Option<&str>,
     _skip_announcements: bool,
 ) -> anyhow::Result<()> {
+    info!("start_chat()");
+
     let (_name, token, id, refresh) = get_credentials(twitch_name, oauth_token, client_id)?;
 
     let token_status = match validate(&token) {
@@ -20,6 +32,7 @@ pub fn start_chat(
             Err(_) => panic!("Token refresh failed, unable to validate Twitch API access. Please login again."),
         },
     };
+    info!("token validated.");
 
     let (oauth_token, client_id) = match token_status {
         Some(token_status) => (
@@ -28,11 +41,15 @@ pub fn start_chat(
         ),
         None => (Arc::new(token), Arc::new(id)),
     };
+    info!("token status retrieved.");
 
     get_badges(&oauth_token, &client_id)?;
+    info!("badges created");
 
     // NOTE: Take a look at what is happening in ChannelMessages and remove unused/uneeded things
-    // let (pubsub_tx, rx) = channel::<ChannelMessages>();
+    let (transmitter, receiver) = channel::<ChannelMessages>();
+    info!("channel message channel created");
+
     // let announce_tx = pubsub_tx.clone();
     // let chat_tx = pubsub_tx.clone();
     // let eventsub_tx = pubsub_tx.clone();
@@ -61,19 +78,35 @@ pub fn start_chat(
     //     twitch_irc.listen();
     // });
 
-    // NOTE: Keep this
-    // let (socket_tx, socket_rx) = channel::<ChannelMessages>();
+    // NOTE: Keep this, this can go last, needs to happen after EventSub
+    let (socket_transmitter, socket_receiver) = channel::<ChannelMessages>();
+    info!("websocket channel created");
+
     // thread::spawn(|| {
     //     start_websocket(socket_rx);
     // });
 
     // NOTE: Keep this
-    // let id = client_id.clone();
-    // let token = oauth_token.clone();
-    // let eventsub_socket_tx = socket_tx.clone();
-    // thread::spawn(|| {
-    //     start_eventsub(token, id, eventsub_tx, eventsub_socket_tx);
-    // });
+    let id = client_id.clone();
+    let token = oauth_token.clone();
+    let eventsub_transmitter = transmitter.clone();
+    let eventsub_to_websocket_transmitter = socket_transmitter.clone();
+    info!("attack of the clones");
+
+    thread::spawn(|| {
+        info!("started eventsub thread");
+        start_eventsub(token, id, eventsub_transmitter, eventsub_to_websocket_transmitter);
+    });
+
+    info!("thread started");
+
+    loop {
+        sleep(Duration::from_secs(10));
+
+        if false {
+            break;
+        }
+    }
 
     // NOTE: Ratatui stuff, this should go away for Anathema
     // install_hooks()?;

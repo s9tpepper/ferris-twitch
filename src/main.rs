@@ -1,5 +1,7 @@
+use anyhow::bail;
 use cli::command;
 
+mod channel;
 mod chat_commands;
 mod cli;
 mod fs;
@@ -7,5 +9,13 @@ mod image_protocols;
 mod twitch;
 
 fn main() -> anyhow::Result<()> {
-    command()
+    match command() {
+        Ok(response) => {
+            println!("command() returned?... {response:?}");
+            Ok(())
+        }
+        Err(error) => {
+            bail!("Mistakes were made... {error}")
+        }
+    }
 }
