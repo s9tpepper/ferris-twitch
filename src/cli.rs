@@ -1,9 +1,12 @@
 use clap::{Parser, Subcommand};
 use commands::start_chat;
 
-use crate::chat_commands::{
-    add_action, add_command, add_reward, list_actions, list_commands, list_rewards, remove_action, remove_command,
-    remove_reward,
+use crate::{
+    chat_commands::{
+        add_action, add_command, add_reward, list_actions, list_commands, list_rewards, remove_action, remove_command,
+        remove_reward,
+    },
+    twitch::auth::authenticate_with_twitch,
 };
 
 mod commands;
@@ -13,6 +16,7 @@ pub fn command() -> anyhow::Result<()> {
     match cli.commands {
         // TODO: This needs to be moved in from v1
         // Cmds::Admin => start_admin(),
+        //
         Cmds::Chat {
             twitch_name,
             oauth_token,
@@ -27,9 +31,7 @@ pub fn command() -> anyhow::Result<()> {
 
         Cmds::Commands { cmd } => match cmd {
             SubCmds::List => list_commands(),
-
             SubCmds::Add { name, message, timing } => add_command(&name, &message, timing),
-
             SubCmds::Remove { name } => remove_command(&name),
         },
 
@@ -45,9 +47,7 @@ pub fn command() -> anyhow::Result<()> {
             RewardSubCmds::Remove { name } => remove_reward(&name),
         },
 
-        // Cmds::Login => {
-        //     start_login_flow();
-        // }
+        Cmds::Login => authenticate_with_twitch(),
 
         // NOTE: Remove this catchall when done with the previous commands
         _ => anyhow::Ok(()),

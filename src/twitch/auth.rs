@@ -1,8 +1,42 @@
 use anyhow::bail;
+use base64::{prelude::BASE64_STANDARD, Engine};
 use serde::{Deserialize, Serialize};
-use std::fs;
+use std::{fs, thread::sleep, time::Duration};
 
 use crate::fs::get_data_directory;
+
+const TEN_SECONDS: Duration = Duration::from_secs(10);
+const MAX_RETRIES: u8 = 18;
+
+const TWITCH_SCOPES: [&str; 17] = [
+    "channel:read:subscriptions",
+    "chat:read",
+    "chat:edit",
+    "channel:moderate",
+    "channel:read:redemptions",
+    "channel:manage:redemptions",
+    "channel:bot",
+    "user:write:chat",
+    "moderator:manage:shoutouts",
+    "user_read",
+    "chat_login",
+    "bits:read",
+    "channel:moderate",
+    "channel:read:ads",
+    "user:read:chat",
+    "user:bot",
+    "channel:bot",
+];
+
+const TWITCH_CREATE_TOKEN: &str = "https://twitchtokengenerator.com/api/create/[APP_NAME]/[SCOPES]";
+const TWITCH_TOKEN_STATUS: &str = "https://twitchtokengenerator.com/api/status/[ID]";
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct TokenResponse {
+    success: bool,
+    id: String,
+    message: String,
+}
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct TokenStatus {
@@ -97,5 +131,54 @@ pub fn store_token(token_status: &TokenStatus) -> anyhow::Result<()> {
 
     fs::write(token_dir, serde_json::to_string(&token_status)?)?;
 
+    Ok(())
+}
+
+pub fn authenticate_with_twitch() -> anyhow::Result<()> {
+    let app_name = BASE64_STANDARD.encode(clap::crate_name!());
+    let url = TWITCH_CREATE_TOKEN
+        .replace("[APP_NAME]", &app_name)
+        .replace("[SCOPES]", &TWITCH_SCOPES.join("+"));
+
+    let token_response = match ureq::get(&url).call() {
+        Ok(response) => response,
+        Err(_) => bail!("Failed to get token response"),
+    };
+
+    let token_response = serde_json::from_str::<TokenResponse>(&token_response.into_string()?)?;
+    println!("Navigate to this url to grant a token: {}", token_response.message);
+
+    let mut retries = 0;
+
+    let status_id = token_response.id;
+    let status_url = TWITCH_TOKEN_STATUS.replace("[ID]", &status_id);
+    loop {
+        if retries == MAX_RETRIES {
+            println!("You took too long, please try again");
+            break;
+        }
+
+        let token_status_response = match ureq::get(&status_url).call() {
+            Ok(response) => response,
+            Err(_) => {
+                println!("Failed to get token status");
+                bail!("token status response was bad");
+            }
+        };
+
+        let token_status = serde_json::from_str::<TokenStatus>(&token_status_response.into_string()?)?;
+        match token_status.success {
+            true => {
+                store_token(&token_status)?;
+                break;
+            }
+            false => {
+                sleep(TEN_SECONDS);
+                retries += 1;
+            }
+        }
+    }
+
+    println!("Token has been successfully generated.");
     Ok(())
 }
