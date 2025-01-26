@@ -28,7 +28,7 @@ pub fn channel_points_custom_reward_redemption_add(
         user_input,
         status,
         ..
-    } = &payload.event
+    } = &*payload.event
     else {
         return;
     };

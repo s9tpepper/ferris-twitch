@@ -9,7 +9,7 @@ mod prelude;
 use prelude::*;
 
 pub fn handle_notification(
-    metadata: &NotificationMetadata,
+    _metadata: &NotificationMetadata,
     payload: &NotificationPayload,
     tui_tx: &Sender<ChannelMessages>,
     websocket_tx: &Sender<ChannelMessages>,

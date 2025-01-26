@@ -12,7 +12,7 @@ pub fn channel_chat_clear_user_messages(
     tui_tx: &Sender<ChannelMessages>,
     websocket_tx: &Sender<ChannelMessages>,
 ) {
-    let NotificationEvent::ChannelChatClearUserMessages { target_user_name, .. } = &payload.event else {
+    let NotificationEvent::ChannelChatClearUserMessages { target_user_name, .. } = &*payload.event else {
         return;
     };
 

@@ -5,21 +5,20 @@ use crate::{
     twitch::eventsub::deserialization::{NotificationEvent, NotificationPayload},
 };
 
-use super::send_to_channels;
+// use super::send_to_channels;
 
 pub fn channel_chat_notification(
     payload: &NotificationPayload,
-    tui_tx: &Sender<ChannelMessages>,
-    websocket_tx: &Sender<ChannelMessages>,
+    _tui_tx: &Sender<ChannelMessages>,
+    _websocket_tx: &Sender<ChannelMessages>,
 ) {
-    // TODO: Update this to ChannelNotification once that structure has been created
-    let NotificationEvent::ChannelChatClearUserMessages { target_user_name, .. } = &payload.event else {
+    let NotificationEvent::ChannelNotification { .. } = &*payload.event else {
         return;
     };
 
-    let channel_message = ChannelMessages::ClearMessagesByUser {
-        target_user_name: target_user_name.clone(),
-    };
-
-    send_to_channels(channel_message, tui_tx, websocket_tx);
+    // let channel_message = ChannelMessages::ClearMessagesByUser {
+    //     target_user_name: target_user_name.clone(),
+    // };
+    //
+    // send_to_channels(channel_message, tui_tx, websocket_tx);
 }

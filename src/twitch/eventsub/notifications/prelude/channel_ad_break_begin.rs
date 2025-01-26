@@ -12,7 +12,7 @@ pub fn channel_ad_break_begin(
     tui_tx: &Sender<ChannelMessages>,
     websocket_tx: &Sender<ChannelMessages>,
 ) {
-    let NotificationEvent::ChannelAdBreak { duration_seconds, .. } = payload.event else {
+    let NotificationEvent::ChannelAdBreak { duration_seconds, .. } = *payload.event else {
         return;
     };
 

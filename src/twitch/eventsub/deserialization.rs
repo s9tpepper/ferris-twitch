@@ -87,7 +87,7 @@ pub struct NotificationMetadata {
 #[derive(Deserialize, Debug)]
 pub struct NotificationPayload {
     pub subscription: NotificationPayloadSubscription,
-    pub event: NotificationEvent,
+    pub event: Box<NotificationEvent>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -103,6 +103,48 @@ pub enum NotificationEvent {
         requester_user_id: String,
         requester_user_login: String,
         requester_user_name: String,
+    },
+
+    ChannelNotification {
+        broadcaster_user_id: String,
+        broadcaster_user_login: String,
+        broadcaster_user_name: String,
+        chatter_user_id: String,
+        chatter_user_login: String,
+        chatter_user_name: String,
+        chatter_is_anonymous: bool,
+        color: String,
+        badges: Vec<Badge>,
+        system_message: String,
+        message_id: String,
+        message: Box<Message>,
+        notice_type: Box<NoticeType>,
+        sub: Option<Box<Sub>>,
+        resub: Option<Box<Resub>>,
+        sub_gift: Option<Box<SubGift>>,
+        community_sub_gift: Option<Box<CommunitySubGift>>,
+        gift_paid_upgrade: Option<Box<GiftPaidUpgrade>>,
+        prime_paid_upgrade: Option<Box<PrimePaidUpgrade>>,
+        pay_it_forward: Option<Box<PayItForward>>,
+        raid: Option<Box<Raid>>,
+        unraid: Option<Box<Unraid>>,
+        announcement: Option<Box<Announcement>>,
+        bits_badge_tier: Option<Box<BitsBadgeTier>>,
+        charity_donation: Option<Box<CharityDonation>>,
+        source_broadcaster_user_id: Option<String>,
+        source_broadcaster_user_name: Option<String>,
+        source_broadcaster_user_login: Option<String>,
+        source_message_id: Box<Option<String>>,
+        source_badges: Box<Option<Vec<Emote>>>,
+        shared_chat_sub: Option<Box<Sub>>,
+        shared_chat_resub: Option<Box<Resub>>,
+        shared_chat_sub_gift: Option<Box<SubGift>>,
+        shared_chat_community_sub_gift: Option<Box<CommunitySubGift>>,
+        shared_chat_gift_paid_upgrade: Option<Box<GiftPaidUpgrade>>,
+        shared_chat_prime_paid_upgrade: Option<Box<PrimePaidUpgrade>>,
+        shared_chat_pay_it_forward: Option<Box<PayItForward>>,
+        shared_chat_raid: Option<Box<Raid>>,
+        shared_chat_announcement: Option<Box<Announcement>>,
     },
 
     ChannelPointsCustomRewardRedemptionAdd {
@@ -128,7 +170,246 @@ pub enum NotificationEvent {
         target_user_login: String,
     },
 
-    ChannelNotification {},
+    AutomodMessageHold {},
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct CharityDonation {
+    pub charity_name: String,
+    pub amount: Amount,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Amount {
+    pub value: u32,
+    pub decimal_place: u8,
+    pub currency: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct BitsBadgeTier {
+    pub tier: u8,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Announcement {
+    color: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Unraid {}
+
+#[derive(Debug, Deserialize)]
+pub struct Raid {
+    pub user_id: String,
+    pub user_name: String,
+    pub user_login: String,
+    pub viewer_count: u64,
+    pub profile_image_url: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PayItForward {
+    pub gifter_is_anonymous: bool,
+    pub gifter_user_id: Option<String>,
+    pub gifter_user_name: Option<String>,
+    pub gifter_user_login: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PrimePaidUpgrade {
+    pub sub_tier: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GiftPaidUpgrade {
+    pub gifter_is_anonymous: bool,
+    pub gifter_user_id: Option<String>,
+    pub gifter_user_name: Option<String>,
+    pub gifter_user_login: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CommunitySubGift {
+    pub id: String,
+    pub total: u16,
+    pub sub_tier: String, // 1000, 2000, 3000
+    pub cumulative_total: Option<u16>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct SubGift {
+    duration_months: u8,
+    cumulative_total: u8,
+    recipient_user_id: String,
+    recipient_user_name: String,
+    recipient_user_login: String,
+    sub_tier: String, // 1000, 2000, 3000
+    community_gift_id: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Resub {
+    cumulative_months: u8,
+    duration_months: u8,
+    streak_months: u8,
+    sub_tier: String, // 1000, 2000, 3000
+    is_prime: Option<bool>,
+    is_gift: bool,
+    gifter_is_anonymous: Option<bool>,
+    gifter_user_id: Option<String>,
+    gifter_user_name: Option<String>,
+    gifter_user_login: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Sub {
+    sub_tier: String, // 1000, 2000, 3000
+    is_prime: bool,
+    duration_months: u16,
+}
+
+#[derive(Debug)]
+pub enum NoticeType {
+    Sub,
+    Resub,
+    SubGift,
+    CommunitySubGift,
+    GiftPaidUpgrade,
+    PrimePaidUpgrade,
+    Raid,
+    Unraid,
+    PayItForward,
+    Announcement,
+    BitsBadgeTier,
+    CharityDonation,
+    SharedChatSub,
+    SharedChatResub,
+    SharedChatSubGift,
+    SharedChatCommunitySubGift,
+    SharedChatGiftPaidUpgrade,
+    SharedChatPrimePaidUpgrade,
+    SharedChatRaid,
+    SharedChatPayItForward,
+    SharedChatAnnouncement,
+    Unknown,
+}
+
+impl Serialize for NoticeType {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match self {
+            NoticeType::Sub => serializer.serialize_str("sub"),
+            NoticeType::Resub => serializer.serialize_str("resub"),
+            NoticeType::SubGift => serializer.serialize_str("sub_gift"),
+            NoticeType::CommunitySubGift => serializer.serialize_str("community_sub_gift"),
+            NoticeType::GiftPaidUpgrade => serializer.serialize_str("gift_paid_upgrade"),
+            NoticeType::PrimePaidUpgrade => serializer.serialize_str("prime_paid_upgrade"),
+            NoticeType::Raid => serializer.serialize_str("raid"),
+            NoticeType::Unraid => serializer.serialize_str("unraid"),
+            NoticeType::PayItForward => serializer.serialize_str("pay_it_forward"),
+            NoticeType::Announcement => serializer.serialize_str("announcement"),
+            NoticeType::BitsBadgeTier => serializer.serialize_str("bits_badge_tier"),
+            NoticeType::CharityDonation => serializer.serialize_str("charity_donation"),
+            NoticeType::SharedChatSub => serializer.serialize_str("shared_chat_sub"),
+            NoticeType::SharedChatResub => serializer.serialize_str("shared_chat_resub"),
+            NoticeType::SharedChatSubGift => serializer.serialize_str("shared_chat_sub_gift"),
+            NoticeType::SharedChatCommunitySubGift => serializer.serialize_str("shared_chat_community_gift"),
+            NoticeType::SharedChatGiftPaidUpgrade => serializer.serialize_str("shared_chat_gift_paid_upgrade"),
+            NoticeType::SharedChatPrimePaidUpgrade => serializer.serialize_str("shared_prime_paid_upgrade"),
+            NoticeType::SharedChatRaid => serializer.serialize_str("shared_chat_raid"),
+            NoticeType::SharedChatPayItForward => serializer.serialize_str("shared_chat_pay_it_forward"),
+            NoticeType::SharedChatAnnouncement => serializer.serialize_str("shared_chat_announcement"),
+            NoticeType::Unknown => serializer.serialize_str("unknown"),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for NoticeType {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s: String = Deserialize::deserialize(deserializer)?;
+        match s.as_str() {
+            "sub" => Ok(NoticeType::Sub),
+            "resub" => Ok(NoticeType::Resub),
+            "sub_gift" => Ok(NoticeType::SubGift),
+            "community_sub_gift" => Ok(NoticeType::CommunitySubGift),
+            "gift_paid_upgrade" => Ok(NoticeType::GiftPaidUpgrade),
+            "prime_paid_upgrade" => Ok(NoticeType::PrimePaidUpgrade),
+            "raid" => Ok(NoticeType::Raid),
+            "unraid" => Ok(NoticeType::Unraid),
+            "pay_it_forward" => Ok(NoticeType::PayItForward),
+            "announcement" => Ok(NoticeType::Announcement),
+            "bits_badge_tier" => Ok(NoticeType::BitsBadgeTier),
+            "charity_donation" => Ok(NoticeType::CharityDonation),
+            "shared_chat_sub" => Ok(NoticeType::SharedChatSub),
+            "shared_chat_resub" => Ok(NoticeType::SharedChatResub),
+            "shared_chat_sub_gift" => Ok(NoticeType::SharedChatSubGift),
+            "shared_chat_community_sub_gift" => Ok(NoticeType::SharedChatCommunitySubGift),
+            "shared_chat_gift_paid_upgrade" => Ok(NoticeType::SharedChatGiftPaidUpgrade),
+            "shared_chat_prime_paid_upgrade" => Ok(NoticeType::SharedChatPrimePaidUpgrade),
+            "shared_chat_raid" => Ok(NoticeType::SharedChatRaid),
+            "shared_chat_pay_it_forward" => Ok(NoticeType::SharedChatPayItForward),
+            "shared_chat_announcement" => Ok(NoticeType::SharedChatAnnouncement),
+            _ => Ok(NoticeType::Unknown),
+        }
+    }
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Message {
+    text: String,
+    fragments: Vec<Fragment>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Fragment {
+    r#type: FragmentType,
+    text: String,
+    cheermote: Option<Cheermote>,
+    emote: Option<Emote>,
+    mention: Option<Mention>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Mention {
+    user_id: String,
+    user_name: String,
+    user_login: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Emote {
+    id: String,
+    emote_set_id: String,
+    owner_id: String,
+    format: Vec<String>, // animated | static
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Cheermote {
+    prefix: String,
+    bits: u16,
+    tier: u8,
+}
+
+#[derive(Deserialize, Debug)]
+pub enum FragmentType {
+    Text,
+    Cheermote,
+    Emote,
+    Mention,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Badge {
+    set_id: String,
+    id: String,
+    info: String,
 }
 
 #[derive(Deserialize, Debug)]
