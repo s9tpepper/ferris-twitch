@@ -6,6 +6,7 @@ use std::{
 use anyhow::bail;
 use deserialization::{Condition, Messages, MethodType, Subscription, SubscriptionType, Transport, WelcomePayload};
 use log::info;
+use notifications::handle_notification;
 use tungstenite::{stream::MaybeTlsStream, WebSocket};
 
 use crate::channel::ChannelMessages;
@@ -16,6 +17,7 @@ const EVENT_SUB: &str = "wss://eventsub.wss.twitch.tv:443/ws?keepalive_timeout_s
 const SUBSCRIPTIONS: &str = "https://api.twitch.tv/helix/eventsub/subscriptions";
 
 mod deserialization;
+mod notifications;
 
 pub fn start_eventsub(
     oauth_token: Arc<String>,
@@ -37,8 +39,8 @@ fn listen(
     socket: &mut WebSocket<MaybeTlsStream<TcpStream>>,
     oauth_token: Arc<String>,
     client_id: Arc<String>,
-    _tx: Sender<ChannelMessages>,
-    _socket_tx: Sender<ChannelMessages>,
+    tui_tx: Sender<ChannelMessages>,
+    websocket_tx: Sender<ChannelMessages>,
 ) {
     loop {
         info!("running listen loop...");
@@ -50,15 +52,17 @@ fn listen(
 
                     match serde_json::from_str::<Messages>(&text_message) {
                         Ok(message) => match &message {
-                            Messages::Welcome { metadata, payload } => {
-                                create_subscriptions(payload, oauth_token.clone(), client_id.clone())
+                            Messages::Welcome { payload, .. } => {
+                                create_subscriptions(payload, &oauth_token, &client_id)
                             }
-                            Messages::KeepAlive { metadata, payload } => {
+                            Messages::KeepAlive { .. } => {
                                 info!("It's alive!...");
                             }
-                            Messages::Notification { metadata, payload } => todo!(),
-                            Messages::Reconnect { metadata, payload } => todo!(),
-                            Messages::Revocation { metadata, payload } => todo!(),
+                            Messages::Notification { metadata, payload } => {
+                                handle_notification(metadata, payload, &tui_tx, &websocket_tx, &oauth_token, &client_id)
+                            }
+                            Messages::Reconnect { .. } => todo!(),
+                            Messages::Revocation { .. } => todo!(),
                         },
 
                         Err(error) => {
@@ -119,7 +123,7 @@ fn listen(
     }
 }
 
-fn create_subscriptions(payload: &WelcomePayload, oauth_token: Arc<String>, client_id: Arc<String>) {
+fn create_subscriptions(payload: &WelcomePayload, oauth_token: &Arc<String>, client_id: &Arc<String>) {
     get_eventsub_subscription(
         &payload.session.id,
         SubscriptionType::ChannelAdBreakBegin,
@@ -141,6 +145,15 @@ fn create_subscriptions(payload: &WelcomePayload, oauth_token: Arc<String>, clie
     get_eventsub_subscription(
         &payload.session.id,
         SubscriptionType::ChannelChatNotification,
+        MethodType::WebSocket,
+        oauth_token.clone(),
+        client_id.clone(),
+    )
+    .expect("Channel chat notification subscription failed");
+
+    get_eventsub_subscription(
+        &payload.session.id,
+        SubscriptionType::ChannelPointsCustomRewardRedemptionAdd,
         MethodType::WebSocket,
         oauth_token.clone(),
         client_id.clone(),

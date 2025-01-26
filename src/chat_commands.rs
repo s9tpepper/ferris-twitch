@@ -1,5 +1,8 @@
 use std::fs;
 
+use anyhow::bail;
+use log::info;
+
 use crate::fs::get_data_directory;
 
 pub fn list_commands() -> anyhow::Result<()> {
@@ -179,4 +182,23 @@ pub fn add_reward(reward_name: &str, cli: &str) -> anyhow::Result<()> {
 
 pub fn remove_reward(reward_name: &str) -> anyhow::Result<()> {
     remove_item(reward_name, "chat_rewards")
+}
+
+pub fn get_reward(reward_name: &str) -> anyhow::Result<String> {
+    get_item(reward_name, "chat_rewards")
+}
+
+fn get_item(item_name: &str, item_type: &str) -> anyhow::Result<String> {
+    let mut item_path = get_data_directory(Some(item_type))?;
+    item_path.push(item_name);
+
+    if !item_path.exists() {
+        let human_readable = item_type.replace('_', " ");
+        bail!("No {human_readable} found")
+    }
+
+    let item = fs::read_to_string(&item_path)?;
+    info!("Read item from {item_path:?}, item: '{item}'");
+
+    Ok(item)
 }

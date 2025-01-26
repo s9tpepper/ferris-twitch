@@ -2,17 +2,15 @@ use std::time::{Duration, SystemTime};
 
 use serde::{Deserialize, Serialize};
 
-// NOTE: I think that all this garbage can go away now, but not 100% sure yet...
-
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum ChannelMessages {
-    MessageData(MessageData),
-    Announcement(Announcement),
-    // TODO: Recreate or move from v1 once IRC has been moved to EventSub
-    // TwitchMessage(TwitchMessage),
-    Notifications(Box<SubscriptionEvent>),
+    AdBreak { message: String },
+    ClearMessagesByUser { target_user_name: String },
+    RedeemRefund { message: String, command_output: String },
 }
 
+// NOTE: I think that all this garbage can go away now, but not 100% sure yet...
+// Every struct from this line down is questionable
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct BitsBadgeTier {
     pub tier: u8,

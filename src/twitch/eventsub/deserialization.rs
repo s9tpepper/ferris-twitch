@@ -86,7 +86,57 @@ pub struct NotificationMetadata {
 
 #[derive(Deserialize, Debug)]
 pub struct NotificationPayload {
-    subscription: NotificationPayloadSubscription,
+    pub subscription: NotificationPayloadSubscription,
+    pub event: NotificationEvent,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(untagged)]
+pub enum NotificationEvent {
+    ChannelAdBreak {
+        duration_seconds: usize,
+        started_at: String,
+        is_automatic: bool,
+        broadcaster_user_id: String,
+        broadcaster_user_login: String,
+        broadcaster_user_name: String,
+        requester_user_id: String,
+        requester_user_login: String,
+        requester_user_name: String,
+    },
+
+    ChannelPointsCustomRewardRedemptionAdd {
+        id: String,
+        broadcaster_user_id: String,
+        broadcaster_user_login: String,
+        broadcaster_user_name: String,
+        user_id: String,
+        user_login: String,
+        user_name: String,
+        user_input: String,
+        status: String,
+        reward: Reward,
+        redeemed_at: String,
+    },
+
+    ChannelChatClearUserMessages {
+        broadcaster_user_id: String,
+        broadcaster_user_name: String,
+        broadcaster_user_login: String,
+        target_user_id: String,
+        target_user_name: String,
+        target_user_login: String,
+    },
+
+    ChannelNotification {},
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Reward {
+    pub id: String,
+    pub title: String,
+    pub cost: usize,
+    pub prompt: String,
 }
 
 #[derive(Serialize, Debug)]
@@ -101,14 +151,14 @@ pub struct Subscription {
 
 #[derive(Deserialize, Debug)]
 pub struct NotificationPayloadSubscription {
-    id: String,
-    status: String,
-    r#type: SubscriptionType,
-    version: String,
-    cost: usize,
-    condition: Condition,
-    transport: Transport,
-    created_at: String,
+    pub id: String,
+    pub status: String,
+    pub r#type: SubscriptionType,
+    pub version: String,
+    pub cost: usize,
+    pub condition: Condition,
+    pub transport: Transport,
+    pub created_at: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
