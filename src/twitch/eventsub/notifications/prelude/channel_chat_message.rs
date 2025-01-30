@@ -25,8 +25,10 @@ pub fn channel_chat_message(
         return;
     };
 
+    // TODO: Remove the clone after figuring out which fields are actually needed from the
+    // ChannelNotification
     let channel_message = ChannelMessages::ChatMessage {
-        message: &payload.event,
+        message: payload.event.clone(),
     };
 
     send_to_channels(channel_message, tui_tx, websocket_tx);

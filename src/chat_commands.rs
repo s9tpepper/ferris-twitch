@@ -125,7 +125,7 @@ pub fn list_actions() -> anyhow::Result<()> {
 }
 
 fn list(list_type: &str) -> anyhow::Result<()> {
-    let list = get_list(&list_type)?;
+    let list = get_list(list_type)?;
     let human_readable = list_type.replace('_', " ");
     if list.is_empty() {
         println!("Currently no {human_readable} have been added.");

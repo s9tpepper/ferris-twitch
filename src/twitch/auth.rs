@@ -55,7 +55,7 @@ pub struct TokenStatus {
     pub error: Option<usize>,
 }
 
-pub fn read_auth_token<'a>() -> anyhow::Result<TokenStatus> {
+pub fn read_auth_token() -> anyhow::Result<TokenStatus> {
     let error_message =
         "You need to provide credentials via positional args, env vars, or by running the login command";
     let mut data_dir = get_data_directory(Some("token")).expect(error_message);

@@ -179,7 +179,7 @@ fn get_eventsub_subscription(
                     "Authorization",
                     format!("Bearer {}", &oauth_token.replace("oauth:", "")).as_str(),
                 )
-                .set("Client-Id", &client_id)
+                .set("Client-Id", client_id)
                 .set("Content-Type", "application/json")
                 .send_json(subscription)
             {

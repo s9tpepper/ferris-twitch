@@ -47,7 +47,7 @@ pub fn start_chat(
     info!("badges created");
 
     // NOTE: Take a look at what is happening in ChannelMessages and remove unused/uneeded things
-    let (transmitter, receiver) = channel::<ChannelMessages>();
+    let (transmitter, _receiver) = channel::<ChannelMessages>();
     info!("channel message channel created");
 
     // let announce_tx = pubsub_tx.clone();
@@ -79,7 +79,7 @@ pub fn start_chat(
     // });
 
     // NOTE: Keep this, this can go last, needs to happen after EventSub
-    let (socket_transmitter, socket_receiver) = channel::<ChannelMessages>();
+    let (socket_transmitter, _socket_receiver) = channel::<ChannelMessages>();
     info!("websocket channel created");
 
     // thread::spawn(|| {

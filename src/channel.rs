@@ -9,7 +9,7 @@ pub enum ChannelMessages {
     AdBreak { message: String },
     ClearMessagesByUser { target_user_name: String },
     RedeemRefund { message: String, command_output: String },
-    ChatMessage { message: &Box<NotificationEvent> },
+    ChatMessage { message: Box<NotificationEvent> },
 }
 
 // NOTE: I think that all this garbage can go away now, but not 100% sure yet...
@@ -185,6 +185,7 @@ pub struct Announcement {
     pub timing: Duration,
     pub message: String,
     pub start: SystemTime,
+    #[allow(unused)]
     #[serde(skip)]
     pub area: Option<Rect>,
 }
@@ -206,6 +207,7 @@ pub enum SubMessage {
 
 #[derive(Clone, Deserialize, Serialize, Debug)]
 pub struct SubscribeEvent {
+    #[allow(unused)]
     #[serde(skip)]
     pub area: Option<Rect>,
     pub topic: String,
@@ -214,6 +216,7 @@ pub struct SubscribeEvent {
 
 #[derive(Clone, Deserialize, Serialize, Debug)]
 pub struct BitsEvent {
+    #[allow(unused)]
     #[serde(skip)]
     pub area: Option<Rect>,
     pub is_anonymous: bool,

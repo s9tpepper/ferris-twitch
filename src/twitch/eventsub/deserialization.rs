@@ -366,7 +366,7 @@ pub struct Message {
     fragments: Vec<Fragment>,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Fragment {
     r#type: FragmentType,
     text: String,
@@ -375,7 +375,7 @@ pub struct Fragment {
     mention: Option<Mention>,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Mention {
     user_id: String,
     user_name: String,
@@ -390,14 +390,14 @@ pub struct Emote {
     format: Vec<String>, // animated | static
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Cheermote {
     prefix: String,
     bits: u16,
     tier: u8,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum FragmentType {
     Text,
     Cheermote,
@@ -412,7 +412,7 @@ pub struct Badge {
     info: String,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Reward {
     pub id: String,
     pub title: String,
