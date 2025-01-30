@@ -127,69 +127,45 @@ fn listen(
 }
 
 fn create_subscriptions(payload: &WelcomePayload, oauth_token: &Arc<String>, client_id: &Arc<String>) {
-    get_eventsub_subscription(
-        &payload.session.id,
+    let subscriptions = [
         SubscriptionType::ChannelAdBreakBegin,
-        MethodType::WebSocket,
-        oauth_token.clone(),
-        client_id.clone(),
-    )
-    .expect("Channel ad break begin subscription failed");
-
-    get_eventsub_subscription(
-        &payload.session.id,
         SubscriptionType::ChannelChatClearUserMessages,
-        MethodType::WebSocket,
-        oauth_token.clone(),
-        client_id.clone(),
-    )
-    .expect("Channel chat clear user messages subscription failed");
-
-    get_eventsub_subscription(
-        &payload.session.id,
         SubscriptionType::ChannelChatNotification,
-        MethodType::WebSocket,
-        oauth_token.clone(),
-        client_id.clone(),
-    )
-    .expect("Channel chat notification subscription failed");
-
-    get_eventsub_subscription(
-        &payload.session.id,
         SubscriptionType::ChannelPointsCustomRewardRedemptionAdd,
-        MethodType::WebSocket,
-        oauth_token.clone(),
-        client_id.clone(),
-    )
-    .expect("Channel points custom reward redemption add subscription failed");
-
-    get_eventsub_subscription(
-        &payload.session.id,
         SubscriptionType::ChannelPointsCustomRewardRedemptionUpdate,
-        MethodType::WebSocket,
-        oauth_token.clone(),
-        client_id.clone(),
-    )
-    .expect("ChannelPointsCustomRewardRedemptionUpdate subscription failed");
-
-    get_eventsub_subscription(
-        &payload.session.id,
         SubscriptionType::ChannelPointsAutomaticRewardRedemption,
-        MethodType::WebSocket,
-        oauth_token.clone(),
-        client_id.clone(),
-    )
-    .expect("ChannelPointsAutomaticRewardRedemption subscription failed");
+    ];
+
+    subscriptions.iter().for_each(|subscription_type| {
+        let sub_name = match serde_json::to_string(&subscription_type) {
+            Ok(serialized) => serialized,
+            Err(_) => "subscription_type(unserialized)".to_string(),
+        };
+
+        info!("Subscribing to {sub_name}");
+
+        let error_message = format!("{sub_name} subscription failed");
+        get_eventsub_subscription(
+            &payload.session.id,
+            subscription_type,
+            MethodType::WebSocket,
+            oauth_token,
+            client_id,
+        )
+        .expect(&error_message);
+
+        info!("Subscribed to {sub_name}.");
+    });
 
     info!("Finished subscribing to all events");
 }
 
 fn get_eventsub_subscription(
     session_id: &str,
-    r#type: SubscriptionType,
+    r#type: &SubscriptionType,
     method: MethodType,
-    oauth_token: Arc<String>,
-    client_id: Arc<String>,
+    oauth_token: &Arc<String>,
+    client_id: &Arc<String>,
 ) -> anyhow::Result<()> {
     match get_user(&oauth_token.clone(), &client_id.clone()) {
         Ok(user) => {
@@ -206,7 +182,11 @@ fn get_eventsub_subscription(
                 .set("Content-Type", "application/json")
                 .send_json(subscription)
             {
-                Ok(_) => Ok(()),
+                Ok(response) => {
+                    info!("Subscription Response: {}", response.into_string()?);
+
+                    Ok(())
+                }
                 Err(_) => bail!("Could not complete subscription request for {sub_type:?}"),
             }
         }
@@ -229,12 +209,12 @@ fn get_condition(user: &User) -> Condition {
     }
 }
 
-fn get_subscription(
-    r#type: SubscriptionType,
+fn get_subscription<'a>(
+    r#type: &'a SubscriptionType,
     condition: Condition,
     session_id: &str,
     method: MethodType,
-) -> Subscription {
+) -> Subscription<'a> {
     Subscription {
         r#type,
         condition,

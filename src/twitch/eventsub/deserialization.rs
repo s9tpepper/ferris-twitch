@@ -421,8 +421,8 @@ pub struct Reward {
 }
 
 #[derive(Serialize, Debug)]
-pub struct Subscription {
-    pub r#type: SubscriptionType,
+pub struct Subscription<'a> {
+    pub r#type: &'a SubscriptionType,
     pub condition: Condition,
     pub version: String,
     pub transport: Transport,
