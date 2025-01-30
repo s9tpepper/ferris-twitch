@@ -43,12 +43,10 @@ fn listen(
     websocket_tx: Sender<ChannelMessages>,
 ) {
     loop {
-        info!("running listen loop...");
-
         if let Ok(message) = socket.read() {
             match message {
                 tungstenite::Message::Text(text_message) => {
-                    info!("got an eventsub message: {text_message}");
+                    info!("EventSub Message: {text_message}");
 
                     match serde_json::from_str::<Messages>(&text_message) {
                         Ok(message) => match &message {
@@ -59,6 +57,7 @@ fn listen(
                                 info!("It's alive!...");
                             }
                             Messages::Notification { metadata, payload } => {
+                                info!("listen::Messages::Notification()");
                                 handle_notification(metadata, payload, &tui_tx, &websocket_tx, &oauth_token, &client_id)
                             }
                             Messages::Reconnect { .. } => todo!(),
@@ -110,14 +109,18 @@ fn listen(
                 }
 
                 tungstenite::Message::Ping(ping_message) => {
+                    info!("PING");
                     let _ = socket.send(tungstenite::Message::Pong(ping_message));
+                    info!("PONG");
                 }
 
                 tungstenite::Message::Close(close_message) => {
-                    println!("Close message received: {close_message:?}");
+                    info!("Close message received: {close_message:?}");
                 }
 
-                _ => {}
+                catchall => {
+                    info!("Catchall: {catchall}");
+                }
             }
         }
     }
@@ -158,7 +161,27 @@ fn create_subscriptions(payload: &WelcomePayload, oauth_token: &Arc<String>, cli
         oauth_token.clone(),
         client_id.clone(),
     )
-    .expect("Channel chat notification subscription failed");
+    .expect("Channel points custom reward redemption add subscription failed");
+
+    get_eventsub_subscription(
+        &payload.session.id,
+        SubscriptionType::ChannelPointsCustomRewardRedemptionUpdate,
+        MethodType::WebSocket,
+        oauth_token.clone(),
+        client_id.clone(),
+    )
+    .expect("ChannelPointsCustomRewardRedemptionUpdate subscription failed");
+
+    get_eventsub_subscription(
+        &payload.session.id,
+        SubscriptionType::ChannelPointsAutomaticRewardRedemption,
+        MethodType::WebSocket,
+        oauth_token.clone(),
+        client_id.clone(),
+    )
+    .expect("ChannelPointsAutomaticRewardRedemption subscription failed");
+
+    info!("Finished subscribing to all events");
 }
 
 fn get_eventsub_subscription(

@@ -20,6 +20,8 @@ pub fn channel_points_custom_reward_redemption_add(
     oauth_token: &Arc<String>,
     client_id: &Arc<String>,
 ) {
+    info!("channel_points_custom_reward_redemption_add()");
+
     let NotificationEvent::ChannelPointsCustomRewardRedemptionAdd {
         id,
         broadcaster_user_id,
@@ -30,10 +32,12 @@ pub fn channel_points_custom_reward_redemption_add(
         ..
     } = &*payload.event
     else {
+        error!("Error trying to destructure NotificationEvent::ChannelPointsCustomRewardRedemptionAdd");
         return;
     };
 
     let Ok(cmd_mapping) = get_reward(&reward.title) else {
+        error!("Error trying to get_reward()");
         return;
     };
 
@@ -67,6 +71,7 @@ pub fn channel_points_custom_reward_redemption_add(
                     reward_fulfilled(id, reward, broadcaster_user_id, oauth_token, client_id);
                 }
             }
+
             false => {
                 refund_points(
                     id,
@@ -81,6 +86,7 @@ pub fn channel_points_custom_reward_redemption_add(
                 );
             }
         },
+
         Err(ref command_error) => {
             error!("Error running reward command: {command_error}, command: {command:?}");
 

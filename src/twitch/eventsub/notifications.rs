@@ -6,6 +6,7 @@ use super::deserialization::{NotificationMetadata, NotificationPayload, Subscrip
 
 mod prelude;
 
+use log::info;
 use prelude::*;
 
 pub fn handle_notification(
@@ -16,6 +17,9 @@ pub fn handle_notification(
     oauth_token: &Arc<String>,
     client_id: &Arc<String>,
 ) {
+    info!("handle_notification()");
+    info!("payload: {payload:?}");
+
     #[allow(clippy::single_match)]
     match payload.subscription.r#type {
         // SubscriptionType::AutomodMessageHold => todo!(),
@@ -58,20 +62,20 @@ pub fn handle_notification(
         // SubscriptionType::ChannelGuestStarSessionEnd => todo!(),
         // SubscriptionType::ChannelGuestStarGuestUpdate => todo!(),
         // SubscriptionType::ChannelGuestStarSettingsUpdate => todo!(),
-        // SubscriptionType::ChannelPointsAutomaticRewardRedemption => {
-        //     info!("ChannelPointsAutomaticRewardRedemption()");
-        //     info!("{payload:?}");
-        // }
+        SubscriptionType::ChannelPointsAutomaticRewardRedemption => {
+            info!("ChannelPointsAutomaticRewardRedemption()");
+            info!("{payload:?}");
+        }
         // SubscriptionType::ChannelPointsCustomRewardAdd => todo!(),
         // SubscriptionType::ChannelPointsCustomRewardUpdate => todo!(),
         // SubscriptionType::ChannelPointsCustomRewardRemove => todo!(),
         SubscriptionType::ChannelPointsCustomRewardRedemptionAdd => {
             channel_points_custom_reward_redemption_add(payload, tui_tx, websocket_tx, oauth_token, client_id)
         }
-        // SubscriptionType::ChannelPointsCustomRewardRedemptionUpdate => {
-        //     info!("ChannelPointsCustomRewardRedemptionUpdate()");
-        //     info!("{payload:?}");
-        // }
+        SubscriptionType::ChannelPointsCustomRewardRedemptionUpdate => {
+            info!("ChannelPointsCustomRewardRedemptionUpdate()");
+            info!("{payload:?}");
+        }
         // SubscriptionType::ChannelPollBegin => todo!(),
         // SubscriptionType::ChannelPollProgress => todo!(),
         // SubscriptionType::ChannelPollEnd => todo!(),
