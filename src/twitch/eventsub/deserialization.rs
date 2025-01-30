@@ -90,7 +90,7 @@ pub struct NotificationPayload {
     pub event: Box<NotificationEvent>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum NotificationEvent {
     ChannelAdBreak {
@@ -196,10 +196,10 @@ pub struct Announcement {
     color: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Serialize, Debug, Deserialize, Clone)]
 pub struct Unraid {}
 
-#[derive(Debug, Deserialize)]
+#[derive(Serialize, Debug, Deserialize, Clone)]
 pub struct Raid {
     pub user_id: String,
     pub user_name: String,
@@ -208,7 +208,7 @@ pub struct Raid {
     pub profile_image_url: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Serialize, Debug, Deserialize, Clone)]
 pub struct PayItForward {
     pub gifter_is_anonymous: bool,
     pub gifter_user_id: Option<String>,
@@ -216,12 +216,12 @@ pub struct PayItForward {
     pub gifter_user_login: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Serialize, Debug, Deserialize, Clone)]
 pub struct PrimePaidUpgrade {
     pub sub_tier: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Serialize, Debug, Deserialize, Clone)]
 pub struct GiftPaidUpgrade {
     pub gifter_is_anonymous: bool,
     pub gifter_user_id: Option<String>,
@@ -229,7 +229,7 @@ pub struct GiftPaidUpgrade {
     pub gifter_user_login: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Serialize, Debug, Deserialize, Clone)]
 pub struct CommunitySubGift {
     pub id: String,
     pub total: u16,
@@ -237,7 +237,7 @@ pub struct CommunitySubGift {
     pub cumulative_total: Option<u16>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SubGift {
     duration_months: u8,
     cumulative_total: u8,
@@ -248,7 +248,7 @@ pub struct SubGift {
     community_gift_id: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Resub {
     cumulative_months: u8,
     duration_months: u8,
@@ -262,14 +262,14 @@ pub struct Resub {
     gifter_user_login: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Sub {
     sub_tier: String, // 1000, 2000, 3000
     is_prime: bool,
     duration_months: u16,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum NoticeType {
     Sub,
     Resub,
@@ -360,13 +360,13 @@ impl<'de> Deserialize<'de> for NoticeType {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Message {
     text: String,
     fragments: Vec<Fragment>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Fragment {
     r#type: FragmentType,
     text: String,
@@ -375,14 +375,14 @@ pub struct Fragment {
     mention: Option<Mention>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Mention {
     user_id: String,
     user_name: String,
     user_login: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Emote {
     id: String,
     emote_set_id: String,
@@ -390,14 +390,14 @@ pub struct Emote {
     format: Vec<String>, // animated | static
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Cheermote {
     prefix: String,
     bits: u16,
     tier: u8,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub enum FragmentType {
     Text,
     Cheermote,
@@ -405,14 +405,14 @@ pub enum FragmentType {
     Mention,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Badge {
     set_id: String,
     id: String,
     info: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Reward {
     pub id: String,
     pub title: String,

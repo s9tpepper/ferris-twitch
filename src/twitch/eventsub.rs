@@ -16,8 +16,8 @@ use super::api::{get_user, User};
 const EVENT_SUB: &str = "wss://eventsub.wss.twitch.tv:443/ws?keepalive_timeout_seconds=30";
 const SUBSCRIPTIONS: &str = "https://api.twitch.tv/helix/eventsub/subscriptions";
 
-mod deserialization;
-mod notifications;
+pub mod deserialization;
+pub mod notifications;
 
 pub fn start_eventsub(
     oauth_token: Arc<String>,

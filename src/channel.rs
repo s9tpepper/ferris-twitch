@@ -2,11 +2,14 @@ use std::time::{Duration, SystemTime};
 
 use serde::{Deserialize, Serialize};
 
+use crate::twitch::eventsub::deserialization::NotificationEvent;
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub enum ChannelMessages {
     AdBreak { message: String },
     ClearMessagesByUser { target_user_name: String },
     RedeemRefund { message: String, command_output: String },
+    ChatMessage { message: &Box<NotificationEvent> },
 }
 
 // NOTE: I think that all this garbage can go away now, but not 100% sure yet...
