@@ -180,5 +180,5 @@ fn refund_points(
         command_output,
     };
 
-    send_to_channels(channel_message, tui_tx, websocket_tx);
+    send_to_channels(channel_message, tui_tx, websocket_tx, "refund_points");
 }

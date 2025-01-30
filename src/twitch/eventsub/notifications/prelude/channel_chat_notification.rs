@@ -20,5 +20,5 @@ pub fn channel_chat_notification(
     //     target_user_name: target_user_name.clone(),
     // };
     //
-    // send_to_channels(channel_message, tui_tx, websocket_tx);
+    // send_to_channels(channel_message, tui_tx, websocket_tx, "channel_chat_notification");
 }

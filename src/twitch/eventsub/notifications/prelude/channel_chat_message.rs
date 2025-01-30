@@ -31,5 +31,5 @@ pub fn channel_chat_message(
         message: payload.event.clone(),
     };
 
-    send_to_channels(channel_message, tui_tx, websocket_tx);
+    send_to_channels(channel_message, tui_tx, websocket_tx, "channel_chat_message");
 }

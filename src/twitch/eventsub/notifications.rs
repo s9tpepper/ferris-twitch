@@ -4,7 +4,7 @@ use crate::channel::ChannelMessages;
 
 use super::deserialization::{NotificationMetadata, NotificationPayload, SubscriptionType};
 
-mod prelude;
+pub mod prelude;
 
 use log::info;
 use prelude::*;

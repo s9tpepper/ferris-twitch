@@ -1,6 +1,7 @@
 use anyhow::bail;
 use cli::command;
 
+mod announcements;
 mod channel;
 mod chat_commands;
 mod cli;

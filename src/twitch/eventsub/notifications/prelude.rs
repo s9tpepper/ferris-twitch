@@ -20,14 +20,15 @@ pub fn send_to_channels(
     channel_message: ChannelMessages,
     tui_tx: &Sender<ChannelMessages>,
     websocket_tx: &Sender<ChannelMessages>,
+    context: &str,
 ) {
     match tui_tx.send(channel_message.clone()) {
         Ok(_) => {}
-        Err(error) => error!("Error sending to TUI: {error}"),
+        Err(error) => error!("[{context}]: Error sending to TUI: {error}"),
     }
 
     match websocket_tx.send(channel_message) {
         Ok(_) => {}
-        Err(error) => error!("Error sending to websocket: {error}"),
+        Err(error) => error!("[{context}]: Error sending to websocket: {error}"),
     }
 }

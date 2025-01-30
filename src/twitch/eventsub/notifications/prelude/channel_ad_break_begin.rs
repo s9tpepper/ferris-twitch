@@ -19,5 +19,5 @@ pub fn channel_ad_break_begin(
     let message = format!("Starting {duration_seconds} second ad break...");
     let channel_message = ChannelMessages::AdBreak { message };
 
-    send_to_channels(channel_message, tui_tx, websocket_tx);
+    send_to_channels(channel_message, tui_tx, websocket_tx, "channel_ad_break_begin");
 }

@@ -10,6 +10,7 @@ pub enum ChannelMessages {
     ClearMessagesByUser { target_user_name: String },
     RedeemRefund { message: String, command_output: String },
     ChatMessage { message: Box<NotificationEvent> },
+    BotAnnouncement { message: String },
 }
 
 // NOTE: I think that all this garbage can go away now, but not 100% sure yet...

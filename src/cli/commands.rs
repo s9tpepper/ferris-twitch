@@ -4,9 +4,10 @@ use std::{
     time::Duration,
 };
 
-use log::info;
+use log::{error, info};
 
 use crate::{
+    announcements::start_announcements,
     channel::ChannelMessages,
     twitch::{
         assets::get_badges,
@@ -19,11 +20,11 @@ pub fn start_chat(
     twitch_name: Option<&str>,
     oauth_token: Option<&str>,
     client_id: Option<&str>,
-    _skip_announcements: bool,
+    skip_announcements: bool,
 ) -> anyhow::Result<()> {
     info!("start_chat()");
 
-    let (_name, token, id, refresh) = get_credentials(twitch_name, oauth_token, client_id)?;
+    let (twitch_name, token, id, refresh) = get_credentials(twitch_name, oauth_token, client_id)?;
 
     let token_status = match validate(&token) {
         Ok(_) => None,
@@ -50,37 +51,17 @@ pub fn start_chat(
     let (transmitter, _receiver) = channel::<ChannelMessages>();
     info!("channel message channel created");
 
-    // let announce_tx = pubsub_tx.clone();
-    // let chat_tx = pubsub_tx.clone();
-    // let eventsub_tx = pubsub_tx.clone();
-
-    // NOTE: This needs to go, whatever is in here should move to EventSub
-    // let token = oauth_token.clone();
-    // let id = client_id.clone();
-    // thread::spawn(|| {
-    //     connect_to_pub_sub(token, id, pubsub_tx).unwrap();
-    // });
-
-    // NOTE: Keep this
-    // let token = oauth_token.clone();
-    // let name = twitch_name.clone();
-    // let id = client_id.clone();
-    // thread::spawn(move || {
-    //     let _ = start_announcements(&name, &token, &id, announce_tx, skip_announcements);
-    // });
-
-    // NOTE: I think this should move to EventSub
-    // let id = client_id.clone();
-    // let token = oauth_token.clone();
-    // let name = twitch_name.clone();
-    // thread::spawn(move || {
-    //     let mut twitch_irc = TwitchIRC::new(&name, &token, &id, chat_tx);
-    //     twitch_irc.listen();
-    // });
-
-    // NOTE: Keep this, this can go last, needs to happen after EventSub
     let (socket_transmitter, _socket_receiver) = channel::<ChannelMessages>();
     info!("websocket channel created");
+
+    let announce_tx = transmitter.clone();
+    let announce_websocket_tx = socket_transmitter.clone();
+    thread::spawn(
+        move || match start_announcements(announce_tx, announce_websocket_tx, skip_announcements) {
+            Ok(_) => info!("Bot announcements started."),
+            Err(announcements_error) => error!("Bot annoucements errored: {announcements_error}"),
+        },
+    );
 
     // thread::spawn(|| {
     //     start_websocket(socket_rx);
