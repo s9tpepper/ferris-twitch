@@ -134,6 +134,7 @@ fn create_subscriptions(payload: &WelcomePayload, oauth_token: &Arc<String>, cli
         SubscriptionType::ChannelPointsCustomRewardRedemptionAdd,
         SubscriptionType::ChannelPointsCustomRewardRedemptionUpdate,
         SubscriptionType::ChannelPointsAutomaticRewardRedemption,
+        SubscriptionType::ChannelChatMessage,
     ];
 
     subscriptions.iter().for_each(|subscription_type| {

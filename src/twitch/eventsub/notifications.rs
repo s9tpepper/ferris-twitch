@@ -35,7 +35,10 @@ pub fn handle_notification(
         SubscriptionType::ChannelChatClearUserMessages => {
             channel_chat_clear_user_messages(payload, tui_tx, websocket_tx)
         }
-        // SubscriptionType::ChannelChatMessage => todo!(),
+        SubscriptionType::ChannelChatMessage => {
+            channel_chat_message(payload, tui_tx, websocket_tx);
+        }
+
         // SubscriptionType::ChannelChatMessageDelete => todo!(),
         SubscriptionType::ChannelChatNotification => channel_chat_notification(payload, tui_tx, websocket_tx),
         // SubscriptionType::ChannelChatSettingsUpdate => todo!(),
