@@ -11,3 +11,6 @@ newtest.sh
 test_*.sh
 nvim.sh
 mod.old
+
+# logs
+sergeant.log
