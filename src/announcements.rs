@@ -5,7 +5,6 @@ use std::{
 };
 
 use clap::builder::OsStr;
-use log::error;
 use serde::{Deserialize, Serialize};
 
 use crate::{

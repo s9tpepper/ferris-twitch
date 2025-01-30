@@ -8,6 +8,7 @@ mod cli;
 mod fs;
 mod image_protocols;
 mod twitch;
+mod websocket;
 
 fn main() -> anyhow::Result<()> {
     match command() {

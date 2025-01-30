@@ -14,6 +14,7 @@ use crate::{
         auth::{get_credentials, refresh_token, validate},
         eventsub::start_eventsub,
     },
+    websocket::start_websocket,
 };
 
 pub fn start_chat(
@@ -24,7 +25,7 @@ pub fn start_chat(
 ) -> anyhow::Result<()> {
     info!("start_chat()");
 
-    let (twitch_name, token, id, refresh) = get_credentials(twitch_name, oauth_token, client_id)?;
+    let (_twitch_name, token, id, refresh) = get_credentials(twitch_name, oauth_token, client_id)?;
 
     let token_status = match validate(&token) {
         Ok(_) => None,
@@ -51,7 +52,7 @@ pub fn start_chat(
     let (transmitter, _receiver) = channel::<ChannelMessages>();
     info!("channel message channel created");
 
-    let (socket_transmitter, _socket_receiver) = channel::<ChannelMessages>();
+    let (socket_transmitter, socket_receiver) = channel::<ChannelMessages>();
     info!("websocket channel created");
 
     let announce_tx = transmitter.clone();
@@ -63,23 +64,20 @@ pub fn start_chat(
         },
     );
 
-    // thread::spawn(|| {
-    //     start_websocket(socket_rx);
-    // });
+    thread::spawn(|| {
+        start_websocket(socket_receiver);
+    });
 
     // NOTE: Keep this
     let id = client_id.clone();
     let token = oauth_token.clone();
     let eventsub_transmitter = transmitter.clone();
     let eventsub_to_websocket_transmitter = socket_transmitter.clone();
-    info!("attack of the clones");
 
     thread::spawn(|| {
         info!("started eventsub thread");
         start_eventsub(token, id, eventsub_transmitter, eventsub_to_websocket_transmitter);
     });
-
-    info!("thread started");
 
     loop {
         sleep(Duration::from_secs(10));
