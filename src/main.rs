@@ -3,6 +3,7 @@ use cli::command;
 
 mod announcements;
 mod channel;
+mod chat;
 mod chat_commands;
 mod cli;
 mod fs;

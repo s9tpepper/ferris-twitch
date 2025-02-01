@@ -1,0 +1,7 @@
+vstack
+  for entry in log
+    for frag in entry.fragments
+      hstack
+        text [foreground: entry.color, bold: true] entry.chatter_user_name
+          span ": "
+        text frag.text

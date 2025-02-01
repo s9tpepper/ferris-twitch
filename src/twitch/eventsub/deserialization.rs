@@ -1,5 +1,6 @@
 #![allow(unused)]
 
+use anathema::state::AnyState;
 use log::info;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
@@ -9,11 +10,6 @@ pub enum Messages {
     Welcome {
         metadata: WelcomeMetadata,
         payload: WelcomePayload,
-    },
-
-    KeepAlive {
-        metadata: KeepAliveMetadata,
-        payload: KeepAlivePayload,
     },
 
     Notification {
@@ -29,6 +25,11 @@ pub enum Messages {
     Revocation {
         metadata: RevocationMetadata,
         payload: RevocationPayload,
+    },
+
+    KeepAlive {
+        metadata: KeepAliveMetadata,
+        payload: KeepAlivePayload,
     },
 }
 
@@ -93,6 +94,29 @@ pub struct NotificationPayload {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum NotificationEvent {
+    ChannelChatMessage {
+        broadcaster_user_id: String,
+        broadcaster_user_name: String,
+        broadcaster_user_login: String,
+        chatter_user_id: String,
+        chatter_user_name: String,
+        chatter_user_login: String,
+        message_id: String,
+        message: Message,
+        color: String,
+        message_type: ChatMessageTypes,
+        badges: Vec<Badge>,
+        cheer: Option<Cheer>,
+        reply: Option<Reply>,
+        channel_points_animation_id: Option<String>, // Undocumented at https://dev.twitch.tv/docs/eventsub/eventsub-reference/#channel-chat-message-event
+        channel_points_custom_reward_id: Option<String>,
+        source_broadcaster_user_id: Option<String>,
+        source_broadcaster_user_name: Option<String>,
+        source_broadcaster_user_login: Option<String>,
+        source_message_id: Option<String>,
+        source_badges: Option<Vec<Badge>>,
+    },
+
     ChannelAdBreak {
         duration_seconds: usize,
         started_at: String,
@@ -170,7 +194,73 @@ pub enum NotificationEvent {
         target_user_login: String,
     },
 
-    AutomodMessageHold {},
+    AutomodMessageHold {
+        temp: String,
+    },
+}
+
+#[derive(Clone, Debug)]
+pub enum ChatMessageTypes {
+    Text,
+    ChannelPointsHighlighted,
+    ChannelPointsSubOnly,
+    UserIntro,
+    PowerUpsMessageEffect,
+    PowerUpsGigantifiedEmote,
+    Unknown,
+}
+
+impl Serialize for ChatMessageTypes {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match self {
+            ChatMessageTypes::Text => serializer.serialize_str("text"),
+            ChatMessageTypes::ChannelPointsHighlighted => serializer.serialize_str("channel_points_highlighted"),
+            ChatMessageTypes::ChannelPointsSubOnly => serializer.serialize_str("channel_points_sub_only"),
+            ChatMessageTypes::UserIntro => serializer.serialize_str("user_intro"),
+            ChatMessageTypes::PowerUpsMessageEffect => serializer.serialize_str("power_ups_message_effect"),
+            ChatMessageTypes::PowerUpsGigantifiedEmote => serializer.serialize_str("power_ups_gigantified_emote"),
+            ChatMessageTypes::Unknown => serializer.serialize_str("unknown_type"),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for ChatMessageTypes {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s: String = Deserialize::deserialize(deserializer)?;
+        match s.as_str() {
+            "text" => Ok(ChatMessageTypes::Text),
+            "channel_points_highlighted" => Ok(ChatMessageTypes::ChannelPointsHighlighted),
+            "channel_points_sub_only" => Ok(ChatMessageTypes::ChannelPointsSubOnly),
+            "user_intro" => Ok(ChatMessageTypes::UserIntro),
+            "power_ups_message_effect" => Ok(ChatMessageTypes::PowerUpsMessageEffect),
+            "power_ups_gigantified_emote" => Ok(ChatMessageTypes::PowerUpsGigantifiedEmote),
+            _ => Ok(ChatMessageTypes::Unknown),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Cheer {
+    bits: usize,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct Reply {
+    parent_message_id: String,
+    parent_message_body: String,
+    parent_user_id: String,
+    parent_user_name: String,
+    parent_user_login: String,
+    thread_message_id: String,
+    thread_user_id: String,
+    thread_user_name: String,
+    thread_user_login: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -362,17 +452,17 @@ impl<'de> Deserialize<'de> for NoticeType {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Message {
-    text: String,
-    fragments: Vec<Fragment>,
+    pub text: String,
+    pub fragments: Vec<Fragment>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Fragment {
-    r#type: FragmentType,
-    text: String,
-    cheermote: Option<Cheermote>,
-    emote: Option<Emote>,
-    mention: Option<Mention>,
+    pub r#type: FragmentType,
+    pub text: String,
+    pub cheermote: Option<Cheermote>,
+    pub emote: Option<Emote>,
+    pub mention: Option<Mention>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -397,12 +487,44 @@ pub struct Cheermote {
     tier: u8,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub enum FragmentType {
     Text,
     Cheermote,
     Emote,
     Mention,
+    Unknown,
+}
+
+impl Serialize for FragmentType {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match self {
+            FragmentType::Text => serializer.serialize_str("text"),
+            FragmentType::Cheermote => serializer.serialize_str("cheermote"),
+            FragmentType::Emote => serializer.serialize_str("emote"),
+            FragmentType::Mention => serializer.serialize_str("mention"),
+            FragmentType::Unknown => serializer.serialize_str("unknown_type"),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for FragmentType {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s: String = Deserialize::deserialize(deserializer)?;
+        match s.as_str() {
+            "text" => Ok(FragmentType::Text),
+            "cheermote" => Ok(FragmentType::Cheermote),
+            "emote" => Ok(FragmentType::Emote),
+            "mention" => Ok(FragmentType::Mention),
+            _ => Ok(FragmentType::Unknown),
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

@@ -1,7 +1,6 @@
 use std::{
     sync::{mpsc::channel, Arc},
-    thread::{self, sleep},
-    time::Duration,
+    thread,
 };
 
 use log::{error, info};
@@ -9,6 +8,7 @@ use log::{error, info};
 use crate::{
     announcements::start_announcements,
     channel::ChannelMessages,
+    chat::start_chat_frontend,
     twitch::{
         assets::get_badges,
         auth::{get_credentials, refresh_token, validate},
@@ -17,6 +17,7 @@ use crate::{
     websocket::start_websocket,
 };
 
+// TODO: Refactor this function to clean it up
 pub fn start_chat(
     twitch_name: Option<&str>,
     oauth_token: Option<&str>,
@@ -49,7 +50,7 @@ pub fn start_chat(
     info!("badges created");
 
     // NOTE: Take a look at what is happening in ChannelMessages and remove unused/uneeded things
-    let (transmitter, _receiver) = channel::<ChannelMessages>();
+    let (transmitter, receiver) = channel::<ChannelMessages>();
     info!("channel message channel created");
 
     let (socket_transmitter, socket_receiver) = channel::<ChannelMessages>();
@@ -79,18 +80,12 @@ pub fn start_chat(
         start_eventsub(token, id, eventsub_transmitter, eventsub_to_websocket_transmitter);
     });
 
-    loop {
-        sleep(Duration::from_secs(10));
-
-        if false {
-            break;
-        }
-    }
-
     // NOTE: Ratatui stuff, this should go away for Anathema
     // install_hooks()?;
     // App::new(&twitch_name).run(rx, socket_tx.clone())?;
     // restore()?;
+
+    start_chat_frontend(receiver)?;
 
     Ok(())
 }

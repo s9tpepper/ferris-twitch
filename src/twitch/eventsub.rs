@@ -46,66 +46,38 @@ fn listen(
         if let Ok(message) = socket.read() {
             match message {
                 tungstenite::Message::Text(text_message) => {
-                    info!("EventSub Message: {text_message}");
+                    info!("EventSub Message: {text_message} end of EventSub");
 
                     match serde_json::from_str::<Messages>(&text_message) {
                         Ok(message) => match &message {
                             Messages::Welcome { payload, .. } => {
+                                info!("listen::Messages::Welcome()");
                                 create_subscriptions(payload, &oauth_token, &client_id)
                             }
+
                             Messages::KeepAlive { .. } => {
-                                info!("It's alive!...");
+                                info!("listen::Messages::KeepAlive()");
                             }
+
                             Messages::Notification { metadata, payload } => {
                                 info!("listen::Messages::Notification()");
                                 handle_notification(metadata, payload, &tui_tx, &websocket_tx, &oauth_token, &client_id)
                             }
-                            Messages::Reconnect { .. } => todo!(),
-                            Messages::Revocation { .. } => todo!(),
+
+                            Messages::Reconnect { .. } => {
+                                info!("listen::Messages::Reconnect()");
+                            }
+
+                            Messages::Revocation { .. } => {
+                                info!("listen::Messages::Revocation()");
+                            }
                         },
 
                         Err(error) => {
-                            info!("{error}");
+                            info!("serde_json error: {error}");
                             continue;
                         }
                     }
-
-                    // match msg.metadata.message_type {
-                    //     MessageTypes::SessionWelcome => {
-                    //         info!("Got a session welcome");
-                    //
-                    //         // create_subscriptions(msg, oauth_token.clone(), client_id.clone());
-                    //     }
-                    //
-                    //     MessageTypes::Notification => {
-                    //         if let Some(Subscription { r#type, .. }) = msg.payload.subscription {
-                    //             match r#type.as_str() {
-                    //                 CHANNEL_AD_BREAK_BEGIN => {
-                    //                     if let Some(SubscriptionEvent { duration_seconds, .. }) = msg.payload.event {
-                    //                         // channel_ad_break_begin_notification(duration_seconds, tx.clone());
-                    //                     }
-                    //                 }
-                    //
-                    //                 CHAT_CLEAR_USER_MESSAGES => {
-                    //                     if let Some(SubscriptionEvent { target_user_login, .. }) = msg.payload.event {
-                    //                         // chat_clear_user_messages_notification(target_user_login, tx.clone());
-                    //                     }
-                    //                 }
-                    //
-                    //                 CHANNEL_CHAT_NOTIFICATION => {
-                    //                     if let Some(SubscriptionEvent { .. }) = msg.payload.event {
-                    //                         // channel_chat_notification(msg.payload.event, tx.clone(), socket_tx.clone());
-                    //                     }
-                    //                 }
-                    //
-                    //                 &_ => {}
-                    //             }
-                    //         }
-                    //     }
-                    //
-                    //     // TODO: Remove this and handle each enum variant
-                    //     _ => {}
-                    // }
                 }
 
                 tungstenite::Message::Ping(ping_message) => {

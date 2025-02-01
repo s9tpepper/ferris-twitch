@@ -27,7 +27,7 @@ pub fn start_websocket(messages_rx: Receiver<ChannelMessages>) {
     });
 
     // TODO: Make the websocket server port configurable
-    let server = TcpListener::bind("0.0.0.0:8765").unwrap();
+    let server = TcpListener::bind("0.0.0.0:8766").unwrap();
     for stream in server.incoming() {
         spawn(move || {
             let mut websocket = accept(stream.unwrap()).unwrap();
@@ -41,7 +41,7 @@ pub fn start_websocket(messages_rx: Receiver<ChannelMessages>) {
                 let new_message = receiver.try_recv();
                 if let Ok(message) = new_message {
                     let json = serde_json::to_string(&message).unwrap();
-                    let send_result = websocket.send(Message::Text(json));
+                    let send_result = websocket.send(Message::Text(json.into()));
 
                     if let Err(send_error) = send_result {
                         error!("websocket: Error sending the message to the websocket: {send_error}");

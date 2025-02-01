@@ -75,7 +75,7 @@ dependencies = [
 [[package]]
 name = "anathema"
 version = "0.2.0"
-source = "git+https://github.com/s9tpepper/anathema.git?branch=dev#9fc87058ccb379d3cd1b7bb830d91f46aab3797c"
+source = "git+https://github.com/togglebyte/anathema.git?branch=dev#393e6c6ba95872a06689c5f1a68db812b5e24932"
 dependencies = [
  "anathema-backend",
  "anathema-debug",
@@ -92,7 +92,7 @@ dependencies = [
 [[package]]
 name = "anathema-backend"
 version = "0.2.0"
-source = "git+https://github.com/s9tpepper/anathema.git?branch=dev#9fc87058ccb379d3cd1b7bb830d91f46aab3797c"
+source = "git+https://github.com/togglebyte/anathema.git?branch=dev#393e6c6ba95872a06689c5f1a68db812b5e24932"
 dependencies = [
  "anathema-geometry",
  "anathema-state",
@@ -107,12 +107,12 @@ dependencies = [
 [[package]]
 name = "anathema-debug"
 version = "0.2.0"
-source = "git+https://github.com/s9tpepper/anathema.git?branch=dev#9fc87058ccb379d3cd1b7bb830d91f46aab3797c"
+source = "git+https://github.com/togglebyte/anathema.git?branch=dev#393e6c6ba95872a06689c5f1a68db812b5e24932"
 
 [[package]]
 name = "anathema-default-widgets"
 version = "0.2.0"
-source = "git+https://github.com/s9tpepper/anathema.git?branch=dev#9fc87058ccb379d3cd1b7bb830d91f46aab3797c"
+source = "git+https://github.com/togglebyte/anathema.git?branch=dev#393e6c6ba95872a06689c5f1a68db812b5e24932"
 dependencies = [
  "anathema-backend",
  "anathema-geometry",
@@ -127,12 +127,12 @@ dependencies = [
 [[package]]
 name = "anathema-geometry"
 version = "0.2.0"
-source = "git+https://github.com/s9tpepper/anathema.git?branch=dev#9fc87058ccb379d3cd1b7bb830d91f46aab3797c"
+source = "git+https://github.com/togglebyte/anathema.git?branch=dev#393e6c6ba95872a06689c5f1a68db812b5e24932"
 
 [[package]]
 name = "anathema-runtime"
 version = "0.2.0"
-source = "git+https://github.com/s9tpepper/anathema.git?branch=dev#9fc87058ccb379d3cd1b7bb830d91f46aab3797c"
+source = "git+https://github.com/togglebyte/anathema.git?branch=dev#393e6c6ba95872a06689c5f1a68db812b5e24932"
 dependencies = [
  "anathema-backend",
  "anathema-debug",
@@ -149,7 +149,7 @@ dependencies = [
 [[package]]
 name = "anathema-state"
 version = "0.2.0"
-source = "git+https://github.com/s9tpepper/anathema.git?branch=dev#9fc87058ccb379d3cd1b7bb830d91f46aab3797c"
+source = "git+https://github.com/togglebyte/anathema.git?branch=dev#393e6c6ba95872a06689c5f1a68db812b5e24932"
 dependencies = [
  "anathema-debug",
  "anathema-state-derive",
@@ -159,7 +159,7 @@ dependencies = [
 [[package]]
 name = "anathema-state-derive"
 version = "0.2.0"
-source = "git+https://github.com/s9tpepper/anathema.git?branch=dev#9fc87058ccb379d3cd1b7bb830d91f46aab3797c"
+source = "git+https://github.com/togglebyte/anathema.git?branch=dev#393e6c6ba95872a06689c5f1a68db812b5e24932"
 dependencies = [
  "manyhow",
  "quote",
@@ -170,7 +170,7 @@ dependencies = [
 [[package]]
 name = "anathema-store"
 version = "0.2.0"
-source = "git+https://github.com/s9tpepper/anathema.git?branch=dev#9fc87058ccb379d3cd1b7bb830d91f46aab3797c"
+source = "git+https://github.com/togglebyte/anathema.git?branch=dev#393e6c6ba95872a06689c5f1a68db812b5e24932"
 dependencies = [
  "anathema-debug",
 ]
@@ -178,7 +178,7 @@ dependencies = [
 [[package]]
 name = "anathema-templates"
 version = "0.2.0"
-source = "git+https://github.com/s9tpepper/anathema.git?branch=dev#9fc87058ccb379d3cd1b7bb830d91f46aab3797c"
+source = "git+https://github.com/togglebyte/anathema.git?branch=dev#393e6c6ba95872a06689c5f1a68db812b5e24932"
 dependencies = [
  "anathema-debug",
  "anathema-state",
@@ -188,7 +188,7 @@ dependencies = [
 [[package]]
 name = "anathema-widgets"
 version = "0.2.0"
-source = "git+https://github.com/s9tpepper/anathema.git?branch=dev#9fc87058ccb379d3cd1b7bb830d91f46aab3797c"
+source = "git+https://github.com/togglebyte/anathema.git?branch=dev#393e6c6ba95872a06689c5f1a68db812b5e24932"
 dependencies = [
  "anathema-debug",
  "anathema-geometry",
@@ -481,9 +481,9 @@ checksum = "8f1fe948ff07f4bd06c30984e69f5b4899c516a3ef74f34df92a2df2ab535495"
 
 [[package]]
 name = "bytes"
-version = "1.6.0"
+version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "514de17de45fdb8dc022b1a7975556c53c86f9f0aa5f534b98977b171857c2c9"
+checksum = "325918d6fe32f23b19878fe4b34794ae41fc19ddbe53b10571a4874d44ffd39b"
 
 [[package]]
 name = "cassowary"
@@ -692,12 +692,12 @@ checksum = "acbf1af155f9b9ef647e42cdc158db4b64a1b61f743629225fde6f3e0be2a7c7"
 
 [[package]]
 name = "colored"
-version = "2.1.0"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cbf2150cce219b664a8a70df7a1f933836724b503f8a413af9365b4dcc4d90b8"
+checksum = "117725a109d387c937a1533ce01b450cbde6b88abceea8473c4d7a85853cda3c"
 dependencies = [
  "lazy_static",
- "windows-sys 0.48.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1684,7 +1684,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d730b085583c4d789dfd07fdcf185be59501666a90c97c40162b37e4fdad272d"
 dependencies = [
  "byteorder-lite",
- "thiserror",
+ "thiserror 1.0.59",
 ]
 
 [[package]]
@@ -1814,7 +1814,7 @@ dependencies = [
  "combine",
  "jni-sys",
  "log",
- "thiserror",
+ "thiserror 1.0.59",
  "walkdir",
  "windows-sys 0.45.0",
 ]
@@ -2184,7 +2184,7 @@ dependencies = [
  "log",
  "ndk-sys",
  "num_enum",
- "thiserror",
+ "thiserror 1.0.59",
 ]
 
 [[package]]
@@ -2409,7 +2409,7 @@ dependencies = [
  "serde_json",
  "serde_path_to_error",
  "sha2",
- "thiserror",
+ "thiserror 1.0.59",
  "url",
 ]
 
@@ -2905,7 +2905,7 @@ dependencies = [
  "rand_chacha",
  "simd_helpers",
  "system-deps",
- "thiserror",
+ "thiserror 1.0.59",
  "v_frame",
  "wasm-bindgen",
 ]
@@ -2962,7 +2962,7 @@ checksum = "bd283d9651eeda4b2a83a43c1c91b266c40fd76ecd39a50a8c630ae69dc72891"
 dependencies = [
  "getrandom",
  "libredox",
- "thiserror",
+ "thiserror 1.0.59",
 ]
 
 [[package]]
@@ -3073,7 +3073,7 @@ dependencies = [
  "hound",
  "lewton",
  "symphonia",
- "thiserror",
+ "thiserror 1.0.59",
 ]
 
 [[package]]
@@ -3135,14 +3135,15 @@ dependencies = [
 
 [[package]]
 name = "rustls"
-version = "0.22.4"
+version = "0.23.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bf4ef73721ac7bcd79b2b315da7779d8fc09718c6b3d2d1b2d94850eb8c18432"
+checksum = "9fb9263ab4eb695e42321db096e3b8fbd715a59b154d5c88d82db2175b681ba7"
 dependencies = [
  "log",
+ "once_cell",
  "ring",
  "rustls-pki-types",
- "rustls-webpki 0.102.3",
+ "rustls-webpki 0.102.8",
  "subtle",
  "zeroize",
 ]
@@ -3158,9 +3159,9 @@ dependencies = [
 
 [[package]]
 name = "rustls-pki-types"
-version = "1.5.0"
+version = "1.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "beb461507cee2c2ff151784c52762cf4d9ff6a61f3e80968600ed24fa837fa54"
+checksum = "917ce264624a4b4db1c364dcc35bfca9ded014d0a958cd47ad3e960e988ea51c"
 
 [[package]]
 name = "rustls-webpki"
@@ -3174,9 +3175,9 @@ dependencies = [
 
 [[package]]
 name = "rustls-webpki"
-version = "0.102.3"
+version = "0.102.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3bce581c0dd41bce533ce695a1437fa16a7ab5ac3ccfa99fe1a620a7885eabf"
+checksum = "64ca1bc8749bd4cf37b5ce386cc146580777b4e8572c7b97baf22c83f444bee9"
 dependencies = [
  "ring",
  "rustls-pki-types",
@@ -3578,7 +3579,7 @@ dependencies = [
  "serde_json",
  "serde_repr",
  "strum 0.25.0",
- "thiserror",
+ "thiserror 1.0.59",
 ]
 
 [[package]]
@@ -3636,7 +3637,7 @@ dependencies = [
  "sha2",
  "smallvec",
  "sqlformat",
- "thiserror",
+ "thiserror 1.0.59",
  "tokio",
  "tokio-stream",
  "tracing",
@@ -3719,7 +3720,7 @@ dependencies = [
  "smallvec",
  "sqlx-core",
  "stringprep",
- "thiserror",
+ "thiserror 1.0.59",
  "tracing",
  "whoami",
 ]
@@ -3757,7 +3758,7 @@ dependencies = [
  "smallvec",
  "sqlx-core",
  "stringprep",
- "thiserror",
+ "thiserror 1.0.59",
  "tracing",
  "whoami",
 ]
@@ -4041,7 +4042,16 @@ version = "1.0.59"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f0126ad08bff79f29fc3ae6a55cc72352056dfff61e3ff8bb7129476d44b23aa"
 dependencies = [
- "thiserror-impl",
+ "thiserror-impl 1.0.59",
+]
+
+[[package]]
+name = "thiserror"
+version = "2.0.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d452f284b73e6d76dd36758a0c8684b1d5be31f92b89d07fd5822175732206fc"
+dependencies = [
+ "thiserror-impl 2.0.11",
 ]
 
 [[package]]
@@ -4049,6 +4059,17 @@ name = "thiserror-impl"
 version = "1.0.59"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d1cd413b5d558b4c5bf3680e324a6fa5014e7b7c067a51e69dbdf47eb7148b66"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.87",
+]
+
+[[package]]
+name = "thiserror-impl"
+version = "2.0.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "26afc1baea8a989337eeb52b6e72a039780ce45c3edfcc9c5b9d112feeb173c2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4299,9 +4320,9 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "tungstenite"
-version = "0.24.0"
+version = "0.26.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18e5b8366ee7a95b16d32197d0b2604b43a0be89dc5fac9f8e96ccafbaedda8a"
+checksum = "413083a99c579593656008130e29255e54dcaae495be556cc26888f211648c24"
 dependencies = [
  "byteorder",
  "bytes",
@@ -4312,7 +4333,7 @@ dependencies = [
  "native-tls",
  "rand",
  "sha1",
- "thiserror",
+ "thiserror 2.0.11",
  "utf-8",
 ]
 
@@ -4391,17 +4412,16 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "ureq"
-version = "2.9.7"
+version = "2.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d11a831e3c0b56e438a28308e7c810799e3c118417f342d30ecec080105395cd"
+checksum = "02d1a66277ed75f640d608235660df48c8e3c19f3b4edb6a263315626cc3c01d"
 dependencies = [
  "base64 0.22.1",
  "flate2",
  "log",
  "once_cell",
- "rustls 0.22.4",
+ "rustls 0.23.22",
  "rustls-pki-types",
- "rustls-webpki 0.102.3",
  "serde",
  "serde_json",
  "url",

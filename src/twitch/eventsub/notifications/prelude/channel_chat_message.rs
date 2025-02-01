@@ -18,15 +18,11 @@ pub fn channel_chat_message(
     info!("channel_chat_message()");
     info!("{payload:?}");
 
-    // TODO: Figure out which fields are needed and send only those via
-    // ChannelMessages::ChatMessage instead of sending the entire enum variant
-    let NotificationEvent::ChannelNotification { .. } = &*payload.event else {
-        error!("Error trying to destructure NotificationEvent::ChannelNotification");
+    let NotificationEvent::ChannelChatMessage { .. } = &*payload.event else {
+        error!("Error trying to destructure NotificationEvent::ChannelChatMessage");
         return;
     };
 
-    // TODO: Remove the clone after figuring out which fields are actually needed from the
-    // ChannelNotification
     let channel_message = ChannelMessages::ChatMessage {
         message: payload.event.clone(),
     };
